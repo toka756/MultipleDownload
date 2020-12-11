@@ -7,13 +7,31 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class SerialViewController: UIViewController {
+    
+    fileprivate var downloadManager = DownloadManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        downloadManager.processDelegate = self
+        
     }
 
+}
 
+extension SerialViewController: DownloadProcessProtocol {
+    
+    func downloadingProgress(_ percent: Float) {
+        
+    }
+    
+    func downloadSucceeded() {
+        
+    }
+
+    func downloadWithError(error: Error?) {
+        
+    }
 }
 

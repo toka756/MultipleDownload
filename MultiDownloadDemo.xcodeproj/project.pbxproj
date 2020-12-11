@@ -7,14 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1A4177E25837BF000A2A020 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A1A4177D25837BF000A2A020 /* README.md */; };
 		A1FDDABA257F699000040291 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDDAB9257F699000040291 /* AppDelegate.swift */; };
 		A1FDDABC257F699000040291 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDDABB257F699000040291 /* SceneDelegate.swift */; };
-		A1FDDABE257F699000040291 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDDABD257F699000040291 /* ViewController.swift */; };
+		A1FDDABE257F699000040291 /* SerialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDDABD257F699000040291 /* SerialViewController.swift */; };
 		A1FDDAC1257F699000040291 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1FDDABF257F699000040291 /* Main.storyboard */; };
 		A1FDDAC3257F699300040291 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1FDDAC2257F699300040291 /* Assets.xcassets */; };
 		A1FDDAC6257F699300040291 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1FDDAC4257F699300040291 /* LaunchScreen.storyboard */; };
 		A1FDDAD1257F699300040291 /* MultiDownloadDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDDAD0257F699300040291 /* MultiDownloadDemoTests.swift */; };
 		A1FDDADC257F699300040291 /* MultiDownloadDemoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDDADB257F699300040291 /* MultiDownloadDemoUITests.swift */; };
+		A1FDDAF8257F69EE00040291 /* DownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDDAF5257F69EE00040291 /* DownloadOperation.swift */; };
+		A1FDDAF9257F69EE00040291 /* AsynchronousOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDDAF6257F69EE00040291 /* AsynchronousOperation.swift */; };
+		A1FDDAFA257F69EE00040291 /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDDAF7257F69EE00040291 /* DownloadManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,10 +39,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A1A4177D25837BF000A2A020 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A1FDDAB6257F699000040291 /* MultiDownloadDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MultiDownloadDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1FDDAB9257F699000040291 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A1FDDABB257F699000040291 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		A1FDDABD257F699000040291 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		A1FDDABD257F699000040291 /* SerialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerialViewController.swift; sourceTree = "<group>"; };
 		A1FDDAC0257F699000040291 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A1FDDAC2257F699300040291 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1FDDAC5257F699300040291 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -49,6 +54,9 @@
 		A1FDDAD7257F699300040291 /* MultiDownloadDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MultiDownloadDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1FDDADB257F699300040291 /* MultiDownloadDemoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiDownloadDemoUITests.swift; sourceTree = "<group>"; };
 		A1FDDADD257F699300040291 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A1FDDAF5257F69EE00040291 /* DownloadOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadOperation.swift; sourceTree = "<group>"; };
+		A1FDDAF6257F69EE00040291 /* AsynchronousOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsynchronousOperation.swift; sourceTree = "<group>"; };
+		A1FDDAF7257F69EE00040291 /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +87,8 @@
 		A1FDDAAD257F699000040291 = {
 			isa = PBXGroup;
 			children = (
+				A1A4177D25837BF000A2A020 /* README.md */,
+				A1FDDAF4257F69CE00040291 /* DownloadManager */,
 				A1FDDAB8257F699000040291 /* MultiDownloadDemo */,
 				A1FDDACF257F699300040291 /* MultiDownloadDemoTests */,
 				A1FDDADA257F699300040291 /* MultiDownloadDemoUITests */,
@@ -101,7 +111,7 @@
 			children = (
 				A1FDDAB9257F699000040291 /* AppDelegate.swift */,
 				A1FDDABB257F699000040291 /* SceneDelegate.swift */,
-				A1FDDABD257F699000040291 /* ViewController.swift */,
+				A1FDDABD257F699000040291 /* SerialViewController.swift */,
 				A1FDDABF257F699000040291 /* Main.storyboard */,
 				A1FDDAC2257F699300040291 /* Assets.xcassets */,
 				A1FDDAC4257F699300040291 /* LaunchScreen.storyboard */,
@@ -126,6 +136,16 @@
 				A1FDDADD257F699300040291 /* Info.plist */,
 			);
 			path = MultiDownloadDemoUITests;
+			sourceTree = "<group>";
+		};
+		A1FDDAF4257F69CE00040291 /* DownloadManager */ = {
+			isa = PBXGroup;
+			children = (
+				A1FDDAF6257F69EE00040291 /* AsynchronousOperation.swift */,
+				A1FDDAF7257F69EE00040291 /* DownloadManager.swift */,
+				A1FDDAF5257F69EE00040291 /* DownloadOperation.swift */,
+			);
+			path = DownloadManager;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -233,6 +253,7 @@
 			files = (
 				A1FDDAC6257F699300040291 /* LaunchScreen.storyboard in Resources */,
 				A1FDDAC3257F699300040291 /* Assets.xcassets in Resources */,
+				A1A4177E25837BF000A2A020 /* README.md in Resources */,
 				A1FDDAC1257F699000040291 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -258,9 +279,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1FDDABE257F699000040291 /* ViewController.swift in Sources */,
+				A1FDDABE257F699000040291 /* SerialViewController.swift in Sources */,
+				A1FDDAFA257F69EE00040291 /* DownloadManager.swift in Sources */,
 				A1FDDABA257F699000040291 /* AppDelegate.swift in Sources */,
+				A1FDDAF9257F69EE00040291 /* AsynchronousOperation.swift in Sources */,
 				A1FDDABC257F699000040291 /* SceneDelegate.swift in Sources */,
+				A1FDDAF8257F69EE00040291 /* DownloadOperation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

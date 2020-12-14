@@ -28,19 +28,29 @@ class SerialDownloadController: UIViewController {
         DownloadManager.maxOperationCount = 1
         downloadManager.processDelegate = self
        
-        downloadLinks.forEach{ link in
+        downloadLinks.forEach { link in
             if let url = URL(string: link) {
                 downloadManager.addDownload(url)
             }
         }
         
-        downloadManager.addAllDownloadComplete({
-            DispatchQueue.main.async { [weak self] in
-                /// Do something when all are downloaded
-                guard let `self` = self else { return }
-                self.descriptionLabel.text = "All of the download completed!"
+        do {
+            /// Do something when all of the download is done
+            let completionHandler = {
+                DispatchQueue.main.async { [weak self] in
+                    /// Do something when all are downloaded
+                    guard let `self` = self else { return }
+                    self.descriptionLabel.text = "All of the download completed!"
+                }
             }
-        })
+                
+            /// Add complete  execut  block after every download task has been added
+            try downloadManager.allDownloadDone(completionHandler: completionHandler)
+        } catch DownloadError.wrongOrder(let message) {
+            print(message)
+        } catch {
+            
+        }
     }
 }
 

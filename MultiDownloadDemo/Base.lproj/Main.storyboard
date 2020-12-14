@@ -16,11 +16,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="36" translatesAutoresizingMaskIntoConstraints="NO" id="1Kc-0q-xcc">
-                                <rect key="frame" x="20" y="417" width="374" height="62.5"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="1Kc-0q-xcc">
+                                <rect key="frame" x="20" y="427.5" width="374" height="41"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gHd-Dk-Hvj">
-                                        <rect key="frame" x="0.0" y="0.0" width="374" height="20.5"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gHd-Dk-Hvj">
+                                        <rect key="frame" x="0.0" y="0.0" width="374" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="B42-a3-TlL"/>
                                         </constraints>
@@ -29,7 +29,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="m1d-aI-yjT">
-                                        <rect key="frame" x="0.0" y="56.5" width="374" height="6"/>
+                                        <rect key="frame" x="0.0" y="35" width="374" height="6"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="6" id="gkz-0m-MZg"/>
                                         </constraints>
@@ -44,19 +44,31 @@
                                     <constraint firstAttribute="trailing" secondItem="m1d-aI-yjT" secondAttribute="trailing" id="bxS-Q6-B3Y"/>
                                 </constraints>
                             </stackView>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="9L2-40-jmN">
+                                <rect key="frame" x="20" y="488.5" width="374" height="313.5"/>
+                                <color key="backgroundColor" red="0.14509803921568626" green="0.14509803921568626" blue="0.14509803921568626" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" systemColor="systemGray6Color"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="1Kc-0q-xcc" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="D6P-dX-HKz"/>
+                            <constraint firstItem="1Kc-0q-xcc" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="Fv6-T2-ddp"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="9L2-40-jmN" secondAttribute="bottom" constant="60" id="Il1-xS-53L"/>
+                            <constraint firstItem="9L2-40-jmN" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="MKH-q1-ded"/>
                             <constraint firstItem="1Kc-0q-xcc" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="bC6-cB-PjL"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="1Kc-0q-xcc" secondAttribute="trailing" constant="20" id="crl-AK-WTs"/>
                             <constraint firstItem="1Kc-0q-xcc" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="q8g-PT-qp3"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="9L2-40-jmN" secondAttribute="trailing" constant="20" id="vFd-cZ-cxL"/>
+                            <constraint firstItem="9L2-40-jmN" firstAttribute="top" secondItem="1Kc-0q-xcc" secondAttribute="bottom" constant="20" id="wa2-lH-acS"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="descriptionLabel" destination="gHd-Dk-Hvj" id="cwH-GF-3qg"/>
                         <outlet property="downloadProgressView" destination="m1d-aI-yjT" id="9Yz-Is-qMl"/>
+                        <outlet property="progressTextView" destination="9L2-40-jmN" id="n4U-1D-2eu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -67,6 +79,9 @@
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray6Color">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

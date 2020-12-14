@@ -11,15 +11,15 @@ class SerialDownloadController: UIViewController {
     
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var downloadProgressView: UIProgressView!
+    @IBOutlet weak var progressTextView: UITextView!
     
     fileprivate var downloadManager = DownloadManager()
     
     public var downloadLinks = [
-        "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_5MG.mp3",
-        "http://ipv4.download.thinkbroadband.com/50MB.zip",
-        "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_2MG.mp3",
-        "http://ipv4.download.thinkbroadband.com/20MB.zip",
+        "http://ipv4.download.thinkbroadband.com/5MB.zip",
         "https://file-examples-com.github.io/uploads/2017/02/zip_10MB.zip",
+        "http://ipv4.download.thinkbroadband.com/10MB.zip",
+        "http://ipv4.download.thinkbroadband.com/20MB.zip"
     ]
 
     override func viewDidLoad() {
@@ -48,20 +48,17 @@ extension SerialDownloadController: DownloadProcessProtocol {
     
     func downloadingProgress(_ percent: Float, fileName: String) {
         
-        DispatchQueue.main.async { [weak self] in
-            guard let `self` = self else { return }
-            let text = String(format: "Downloading: %@, %0.2f%%", fileName ,percent * 100)
-            self.descriptionLabel.text = text
-            self.downloadProgressView.progress = percent
-        }
+        let text = String(format: "Downloading: %@, %0.2f%%", fileName ,percent * 100)
+        self.descriptionLabel.text = text
+        self.downloadProgressView.progress = percent
     }
     
     func downloadSucceeded(_ fileName: String) {
-        
+        self.progressTextView.text.append("\(fileName) has been download \n")
     }
 
     func downloadWithError(_ error: Error?, fileName: String) {
-        
+        self.progressTextView.text.append("Download \(fileName) failed: \(String(describing: (error != nil) ? error?.localizedDescription : "Unknown error")) \n")
     }
 }
 

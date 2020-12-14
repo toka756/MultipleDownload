@@ -91,7 +91,9 @@ extension DownloadManager: URLSessionDownloadDelegate {
         operations[downloadTask.taskIdentifier]?.trackDownloadByOperation(session, downloadTask: downloadTask, didFinishDownloadingTo: location)
         
         if let downloadUrl = downloadTask.originalRequest!.url {
-            processDelegate?.downloadSucceeded(downloadUrl.lastPathComponent)
+            DispatchQueue.main.async { [self] in
+                processDelegate?.downloadSucceeded(downloadUrl.lastPathComponent)
+            }
         }
     }
 
@@ -100,7 +102,9 @@ extension DownloadManager: URLSessionDownloadDelegate {
         
         if let downloadUrl = downloadTask.originalRequest!.url {
             let percent = Double(totalBytesWritten)/Double(totalBytesExpectedToWrite)
-            processDelegate?.downloadingProgress(Float(percent), fileName:  downloadUrl.lastPathComponent)
+            DispatchQueue.main.async { [self] in
+                processDelegate?.downloadingProgress(Float(percent), fileName:  downloadUrl.lastPathComponent)
+            }
         }
     }
     
@@ -109,8 +113,10 @@ extension DownloadManager: URLSessionDownloadDelegate {
         operations[key]?.trackDownloadByOperation(session, task: task, didCompleteWithError: error)
         operations.removeValue(forKey: key)
         
-        if let downloadUrl = task.originalRequest!.url {
-            processDelegate?.downloadWithError(error, fileName: downloadUrl.lastPathComponent)
+        if let downloadUrl = task.originalRequest!.url, error != nil {
+            DispatchQueue.main.async { [self] in
+                processDelegate?.downloadWithError(error, fileName: downloadUrl.lastPathComponent)
+            }
         }
     }
 }

@@ -4,6 +4,7 @@
 Download multiple files with progress view.
 
 Change maxOperationCount to make download serially or concurrently .
+![](https://github.com/toka756/MultipleDownload/blob/mov/serialDownload.gif)
 
 ```
 DownloadManager.maxOperationCount = 1  // download files one by one.
@@ -11,7 +12,7 @@ DownloadManager.maxOperationCount = 1  // download files one by one.
 DownloadManager.maxOperationCount = 3  // download files concurrently(max to 3)
 ```
 
-## Tips
+## Steps
 
 1. Add urls to download queue then the download will start.
 
@@ -53,3 +54,7 @@ func downloadWithError(_ error: Error?, fileName: String)
  })
  
  ```
+ 
+ ## Tip
+ - When download from `http` link, turn `ATS` on in `info.plist`
+    - `App Transport Security Settins` -> `Allow Arbitrary Loads` -> `YES`

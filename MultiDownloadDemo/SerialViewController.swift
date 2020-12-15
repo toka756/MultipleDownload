@@ -16,41 +16,35 @@ class SerialDownloadController: UIViewController {
     fileprivate var downloadManager = DownloadManager()
     
     public var downloadLinks = [
-        "http://ipv4.download.thinkbroadband.com/5MB.zip",
-        "https://file-examples-com.github.io/uploads/2017/02/zip_10MB.zip",
-        "http://ipv4.download.thinkbroadband.com/10MB.zip",
-        "http://ipv4.download.thinkbroadband.com/20MB.zip"
+        "https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4",
+        "https://sample-videos.com/img/Sample-jpg-image-30mb.jpg",
+        "https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1280_10MG.mp4",
+        "https://www.learningcontainer.com/wp-content/uploads/2019/09/sample-pdf-download-10-mb.pdf",
+        "https://sample-videos.com/img/Sample-jpg-image-20mb.jpg",
+        "https://file-examples-com.github.io/uploads/2018/04/file_example_OGG_1920_13_3mg.ogg"
     ]
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        downloadProgressView.progress = 0.0
+        
         DownloadManager.maxOperationCount = 1
         downloadManager.processDelegate = self
+        
+        let completion = BlockOperation {
+            /// Do something here when all of the download is done
+            self.descriptionLabel.text = "All of the download completed!"
+        }
        
         downloadLinks.forEach { link in
             if let url = URL(string: link) {
-                downloadManager.addDownload(url)
+                let downloadOperation = downloadManager.addDownload(url)
+                completion.addDependency(downloadOperation)
             }
         }
         
-        do {
-            /// Do something when all of the download is done
-            let completionHandler = {
-                DispatchQueue.main.async { [weak self] in
-                    /// Do something when all are downloaded
-                    guard let `self` = self else { return }
-                    self.descriptionLabel.text = "All of the download completed!"
-                }
-            }
-                
-            /// Add complete  execut  block after every download task has been added
-            try downloadManager.allDownloadDone(completionHandler: completionHandler)
-        } catch DownloadError.wrongOrder(let message) {
-            print(message)
-        } catch {
-            
-        }
+        OperationQueue.main.addOperation(completion)
     }
 }
 
@@ -68,7 +62,7 @@ extension SerialDownloadController: DownloadProcessProtocol {
     }
 
     func downloadWithError(_ error: Error?, fileName: String) {
-        self.progressTextView.text.append("Download \(fileName) failed: \(String(describing: (error != nil) ? error?.localizedDescription : "Unknown error")) \n")
+        self.progressTextView.text.append("Download \(fileName) failed: \(String(describing: (error != nil) ? error!.localizedDescription : "Unknown error")) \n")
     }
 }
 

@@ -69,25 +69,6 @@ enum DownloadError: Error {
         return operation
     }
 
-    ///  Add Complete. Add complete operation last to make it work after every thing finished
-    ///
-    /// - parameter block: The code to be excuted after all operation finished
-    ///
-    /// - returns:  The DownloadOperation of the operation that was queued
-    func allDownloadDone(completionHandler: @escaping ()->()) throws {
-        if queue.operationCount <= 0 {
-            throw DownloadError.wrongOrder("Don't add complete block before download task.")
-        }
-        
-        /// Still executed the block even if wrong order
-        /// For example, no file need to be download but you can still execued something.
-        let completionOperation = BlockOperation()
-        completionOperation.addExecutionBlock {
-            completionHandler()
-        }
-        queue.addOperation(completionOperation)
-    }
-
     /// Cancel all queued operations
     func cancelAll() {
         queue.cancelAllOperations()

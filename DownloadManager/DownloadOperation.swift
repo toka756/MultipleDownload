@@ -57,10 +57,11 @@ extension DownloadOperation {
     
     /// Download failed.
     func trackDownloadByOperation(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        completeOperation()
         if error != nil {
             print("\(String(describing: error))")
         }
+        
+        completeOperation()
     }
 }
 

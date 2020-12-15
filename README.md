@@ -2,6 +2,7 @@
 
 ## Overview
 Download multiple files with progress view.
+Just drap&drop `DownloadManager` folder to your xcode project. 
 ![](https://github.com/toka756/MultipleDownload/blob/mov/serialDownload.gif)
 
 ## Steps
@@ -38,12 +39,21 @@ func downloadWithError(_ error: Error?, fileName: String)
 ```
 
 3. Do something when all of the files have been download.
- After add download url links, add code block to  `addAllDownloadComplete`  
 
  ```
- downloadManager.addAllDownloadComplete({
-    /// Do something here
- })
+ let completion = BlockOperation {
+     /// Do something when all of the download is done
+     self.descriptionLabel.text = "All of the download completed!"
+ }
+
+ downloadLinks.forEach { link in
+     if let url = URL(string: link) {
+         let downloadOperation = downloadManager.addDownload(url)
+         completion.addDependency(downloadOperation)
+     }
+ }
+ 
+ OperationQueue.main.addOperation(completion)
  
  ```
  

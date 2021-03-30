@@ -49,7 +49,7 @@ enum DownloadError: Error {
     
     /// Delegate-based NSURLSession for DownloadManager
     lazy var session: URLSession = {
-        let configuration = URLSessionConfiguration.default
+        let configuration = URLSessionConfiguration.background(withIdentifier: "key")
         return URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
     }()
     
@@ -80,7 +80,27 @@ enum DownloadError: Error {
 extension DownloadManager: URLSessionDownloadDelegate {
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        operations[downloadTask.taskIdentifier]?.trackDownloadByOperation(session, downloadTask: downloadTask, didFinishDownloadingTo: location)
+        
+        operations[downloadTask.taskIdentifier]?.trackDownloadByOperation(session,
+            downloadTask: downloadTask,
+            didFinishDownloadingTo: location)
+        
+        do {
+            let manager = FileManager.default
+            let destinationURL = try manager.url(for: .documentDirectory,
+                                                 in: .userDomainMask,
+                                                 appropriateFor: nil,
+                                                 create: false)
+            .appendingPathComponent(downloadTask.originalRequest!.url!.lastPathComponent)
+            
+            if manager.fileExists(atPath:  destinationURL.path) {
+                try manager.removeItem(at: destinationURL)
+            }
+            
+            try manager.moveItem(at: location, to: destinationURL)
+        } catch {
+            print("\(error)")
+        }
         
         if let downloadUrl = downloadTask.originalRequest!.url {
             DispatchQueue.main.async { [self] in
@@ -90,17 +110,23 @@ extension DownloadManager: URLSessionDownloadDelegate {
     }
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        operations[downloadTask.taskIdentifier]?.trackDownloadByOperation(session, downloadTask: downloadTask, didWriteData: bytesWritten, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+        
+        operations[downloadTask.taskIdentifier]?.trackDownloadByOperation(session,
+            downloadTask: downloadTask,
+            didWriteData: bytesWritten,
+            totalBytesWritten: totalBytesWritten,
+            totalBytesExpectedToWrite: totalBytesExpectedToWrite)
         
         if let downloadUrl = downloadTask.originalRequest!.url {
-            let percent = Double(totalBytesWritten)/Double(totalBytesExpectedToWrite)
+            let percent = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
             DispatchQueue.main.async { [self] in
-                processDelegate?.downloadingProgress(Float(percent), fileName:  downloadUrl.lastPathComponent)
+                processDelegate?.downloadingProgress(Float(percent), fileName: downloadUrl.lastPathComponent)
             }
         }
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        
         let key = task.taskIdentifier
         operations[key]?.trackDownloadByOperation(session, task: task, didCompleteWithError: error)
         operations.removeValue(forKey: key)

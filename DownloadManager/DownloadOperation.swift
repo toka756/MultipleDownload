@@ -20,6 +20,8 @@ class DownloadOperation : AsynchronousOperation {
     override func cancel() {
         task.cancel()
         super.cancel()
+        
+        completeOperation()
     }
 
     override func main() {
@@ -33,30 +35,18 @@ extension DownloadOperation {
     
     /// Download complete. Save file to document directory.
     func trackDownloadByOperation(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        do {
-            let manager = FileManager.default
-            let destinationURL = try manager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-            .appendingPathComponent(downloadTask.originalRequest!.url!.lastPathComponent)
-            if manager.fileExists(atPath:  destinationURL.path) {
-                try manager.removeItem(at: destinationURL)
-            }
-            try manager.moveItem(at: location, to: destinationURL)
-        }
-        catch {
-            print("\(error)")
-        }
-        
+    
         completeOperation()
     }
 
-    /// Downloading progress.
+    /// Downloading.
     func trackDownloadByOperation(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        //let progress = Double(totalBytesWritten)/Double(totalBytesExpectedToWrite)
-        //print("\(downloadTask.originalRequest!.url!.absoluteString) \(progress)")
+        
     }
     
     /// Download failed.
     func trackDownloadByOperation(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        
         if error != nil {
             print("\(String(describing: error))")
         }

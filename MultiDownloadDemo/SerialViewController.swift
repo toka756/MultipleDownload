@@ -28,41 +28,7 @@ class SerialDownloadController: UIViewController {
         super.viewDidLoad()
         
         downloadProgressView.progress = 0.0
-        
-        DownloadManager.maxOperationCount = 1
-        downloadManager.processDelegate = self
-        
-        let completion = BlockOperation {
-            /// Do something here when all of the download is done
-            self.descriptionLabel.text = "All of the download completed!"
-        }
-       
-        downloadLinks.forEach { link in
-            if let url = URL(string: link) {
-                let downloadOperation = downloadManager.addDownload(url)
-                completion.addDependency(downloadOperation)
-            }
-        }
-        
-        OperationQueue.main.addOperation(completion)
-    }
-}
-
-extension SerialDownloadController: DownloadProcessProtocol {
-    
-    func downloadingProgress(_ percent: Float, fileName: String) {
-        
-        let text = String(format: "Downloading: %@, %0.2f%%", fileName ,percent * 100)
-        self.descriptionLabel.text = text
-        self.downloadProgressView.progress = percent
-    }
-    
-    func downloadSucceeded(_ fileName: String) {
-        self.progressTextView.text.append("\(fileName) has been download \n")
-    }
-
-    func downloadWithError(_ error: Error?, fileName: String) {
-        self.progressTextView.text.append("Download \(fileName) failed: \(String(describing: (error != nil) ? error!.localizedDescription : "Unknown error")) \n")
+        downloadManager.addDownload(downloadLinks)
     }
 }
 

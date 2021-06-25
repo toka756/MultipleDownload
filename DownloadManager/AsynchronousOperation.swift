@@ -8,19 +8,6 @@
 import Foundation
 
 /// Asynchronous operation base class
-///
-/// This is abstract to class performs all of the necessary KVN of `isFinished` and
-/// `isExecuting` for a concurrent `Operation` subclass. You can subclass this and
-/// implement asynchronous operations. All you must do is:
-///
-/// - override `main()` with the tasks that initiate the asynchronous task;
-///
-/// - call `completeOperation()` function when the asynchronous task is done;
-///
-/// - optionally, periodically check `self.cancelled` status, performing any clean-up
-/// necessary and then ensuring that `completeOperation()` is called; or
-/// override `cancel` method, calling `super.cancel()` and then cleaning-up
-/// and ensuring `completeOperation()` is called.
 
 public class AsynchronousOperation : Operation {
     override public var isAsynchronous: Bool {

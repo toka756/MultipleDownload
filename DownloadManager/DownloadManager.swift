@@ -7,10 +7,8 @@
 
 import Foundation
 
-enum DownloadError: Error {
-    case packetFetchError(String) // Error occured while downloading
-    case wrongOrder(String) // Add complete block with wrong order
-}
+typealias ProgressHandler = ((Progress) -> Void)
+typealias CompleteHandler = (() -> Void)
 
 /// Manager of asynchronous download `Operation` objects
 @objcMembers class DownloadManager: NSObject {
@@ -18,47 +16,64 @@ enum DownloadError: Error {
     /// Dictionary of operations, keyed by the `taskIdentifier` of the `URLSessionTask`
     fileprivate var operations = [Int: DownloadOperation]()
     
-    /// Downloading progress handler
-    public var progressHandler: ((Int, Double) -> Void)?
+    fileprivate var progress = Progress(totalUnitCount: 0)
     
-    /// Download complete handler
-    public var completeHandler: ((Int) -> Void)?
+    /// Downloading progress handler
+    public var progressHandler: ProgressHandler
+    
+    /// All download complete handler
+    public var completeHandler: CompleteHandler
     
     /// Set  download count that can execute at the same time.
     /// Default is 1 to make a serial download.
-    public var isSerial = true
+    public var maxOperationCount = 1
+    
+    /// Pesistent session id
+    public var uuid = NSUUID().uuidString
     
     /// Serial NSOperationQueue for downloads
     private let queue: OperationQueue = {
         let _queue = OperationQueue()
-        _queue.name = "download"
+        _queue.name = "downloadqueue"
         return _queue
     }()
     
     /// Delegate-based NSURLSession for DownloadManager
     lazy var session: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: "background")
+        let configuration = URLSessionConfiguration.background(withIdentifier: uuid)
         return URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
     }()
+    
+    init(progressHandler: @escaping ProgressHandler, completeHandler: @escaping CompleteHandler) {
+        self.progressHandler = progressHandler
+        self.completeHandler = completeHandler
+        
+        super.init()
+    }
     
     /// Add download links
     ///
     /// - parameter url: The file's download URL
     ///
     /// - returns: nil
-    @objc func addDownload(_ urls: [String]) {
+    @objc func addDownload(_ urls: [DownloadLink]) {
         
         var newOperations = [DownloadOperation]()
+        let completeOperation = BlockOperation(block: completeHandler)
         
         urls.forEach { link in
-            if let url = URL(string: link) {
-                let operation = DownloadOperation(session: session, url: url)
-                operations[operation.task.taskIdentifier] = operation
+            if let _ = link.link {
+                let operation = DownloadOperation(session: session, downloadLink: link)
+                operations[operation.downloadTask.taskIdentifier] = operation
+                completeOperation.addDependency(operation)
                 newOperations.append(operation)
             }
         }
         
-        queue.addOperations(newOperations, waitUntilFinished: isSerial)
+        queue.maxConcurrentOperationCount = maxOperationCount
+        queue.addOperations(newOperations, waitUntilFinished: false)
+        
+        OperationQueue.main.addOperation(completeOperation)
     }
 
     /// Cancel all queued operations
@@ -76,7 +91,11 @@ extension DownloadManager: URLSessionDownloadDelegate {
     }
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        operations[downloadTask.taskIdentifier]?.trackDownloadByOperation(session, downloadTask: downloadTask, didWriteData: bytesWritten, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+        progress.totalUnitCount = totalBytesExpectedToWrite
+        progress.completedUnitCount = totalBytesWritten
+        progressHandler(progress)
+        
+        //operations[downloadTask.taskIdentifier]?.trackDownloadByOperation(session, downloadTask: downloadTask, didWriteData: bytesWritten, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {

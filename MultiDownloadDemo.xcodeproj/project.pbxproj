@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A181D7FE2684F3E700BF769F /* DownloadLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = A181D7FD2684F3E700BF769F /* DownloadLink.swift */; };
 		A1A4177E25837BF000A2A020 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A1A4177D25837BF000A2A020 /* README.md */; };
 		A1FDDABA257F699000040291 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDDAB9257F699000040291 /* AppDelegate.swift */; };
 		A1FDDABC257F699000040291 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FDDABB257F699000040291 /* SceneDelegate.swift */; };
@@ -39,6 +40,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A181D7FD2684F3E700BF769F /* DownloadLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadLink.swift; sourceTree = "<group>"; };
 		A1A4177D25837BF000A2A020 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A1FDDAB6257F699000040291 /* MultiDownloadDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MultiDownloadDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1FDDAB9257F699000040291 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 				A1FDDAF6257F69EE00040291 /* AsynchronousOperation.swift */,
 				A1FDDAF7257F69EE00040291 /* DownloadManager.swift */,
 				A1FDDAF5257F69EE00040291 /* DownloadOperation.swift */,
+				A181D7FD2684F3E700BF769F /* DownloadLink.swift */,
 			);
 			path = DownloadManager;
 			sourceTree = "<group>";
@@ -282,6 +285,7 @@
 				A1FDDABE257F699000040291 /* SerialViewController.swift in Sources */,
 				A1FDDAFA257F69EE00040291 /* DownloadManager.swift in Sources */,
 				A1FDDABA257F699000040291 /* AppDelegate.swift in Sources */,
+				A181D7FE2684F3E700BF769F /* DownloadLink.swift in Sources */,
 				A1FDDAF9257F69EE00040291 /* AsynchronousOperation.swift in Sources */,
 				A1FDDABC257F699000040291 /* SceneDelegate.swift in Sources */,
 				A1FDDAF8257F69EE00040291 /* DownloadOperation.swift in Sources */,

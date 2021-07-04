@@ -7,8 +7,9 @@
 
 import Foundation
 
-typealias ProgressHandler = ((Progress) -> Void)
-typealias CompleteHandler = (() -> Void)
+typealias ProgressHandler = ((Float, DownloadLink?) -> Void)
+typealias SingleTaskCompleteHandler = ((DownloadLink?) -> Void)
+typealias AllTasksCompleteHandler = (() -> Void)
 
 /// Manager of asynchronous download `Operation` objects
 @objcMembers class DownloadManager: NSObject {
@@ -21,8 +22,11 @@ typealias CompleteHandler = (() -> Void)
     /// Downloading progress handler
     public var progressHandler: ProgressHandler
     
+    /// One task complete handler
+    public var singleTaskCompleteHandler: SingleTaskCompleteHandler
+    
     /// All download complete handler
-    public var completeHandler: CompleteHandler
+    public var allTasksCompleteHandler: AllTasksCompleteHandler
     
     /// Set  download count that can execute at the same time.
     /// Default is 1 to make a serial download.
@@ -40,13 +44,16 @@ typealias CompleteHandler = (() -> Void)
     
     /// Delegate-based NSURLSession for DownloadManager
     lazy var session: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: uuid)
+        let configuration = URLSessionConfiguration.default
         return URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
     }()
     
-    init(progressHandler: @escaping ProgressHandler, completeHandler: @escaping CompleteHandler) {
+    init(progressHandler: @escaping ProgressHandler,
+         singleCompleteHandler: @escaping SingleTaskCompleteHandler,
+         allCompleteHandler: @escaping AllTasksCompleteHandler) {
         self.progressHandler = progressHandler
-        self.completeHandler = completeHandler
+        self.singleTaskCompleteHandler = singleCompleteHandler
+        self.allTasksCompleteHandler = allCompleteHandler
         
         super.init()
     }
@@ -59,7 +66,7 @@ typealias CompleteHandler = (() -> Void)
     @objc func addDownload(_ urls: [DownloadLink]) {
         
         var newOperations = [DownloadOperation]()
-        let completeOperation = BlockOperation(block: completeHandler)
+        let completeOperation = BlockOperation(block: allTasksCompleteHandler)
         
         urls.forEach { link in
             if let _ = link.link {
@@ -87,13 +94,24 @@ typealias CompleteHandler = (() -> Void)
 extension DownloadManager: URLSessionDownloadDelegate {
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        if let _ = downloadTask.originalRequest!.url {
+            DispatchQueue.main.async {
+                self.singleTaskCompleteHandler(self.operations[downloadTask.taskIdentifier]?.downloadLink)
+            }
+        }
+        
         operations[downloadTask.taskIdentifier]?.trackDownloadByOperation(session, downloadTask: downloadTask, didFinishDownloadingTo: location)
     }
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        progress.totalUnitCount = totalBytesExpectedToWrite
-        progress.completedUnitCount = totalBytesWritten
-        progressHandler(progress)
+        
+        if let _ = downloadTask.originalRequest!.url {
+            DispatchQueue.main.async {
+                let progress = Float(totalBytesWritten)/Float(totalBytesExpectedToWrite)
+                print("###\(progress), \(totalBytesExpectedToWrite)###")
+                self.progressHandler(progress, self.operations[downloadTask.taskIdentifier]?.downloadLink)
+            }
+        }
         
         //operations[downloadTask.taskIdentifier]?.trackDownloadByOperation(session, downloadTask: downloadTask, didWriteData: bytesWritten, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
     }

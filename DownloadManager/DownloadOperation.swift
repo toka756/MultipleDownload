@@ -52,20 +52,10 @@ extension DownloadOperation {
         
         completeOperation()
     }
-
-//    Downloading progress.
-//    func trackDownloadByOperation(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-//        let progress = Double(totalBytesWritten)/Double(totalBytesExpectedToWrite)
-//        print("\(downloadTask.originalRequest!.url!.absoluteString) \(progress)")
-//
-//    }
     
     /// Download failed.
     func trackDownloadByOperation(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        if error != nil {
-            print("\(String(describing: error))")
-        }
-        
+    
         completeOperation()
     }
 }

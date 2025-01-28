@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 typealias ProgressHandler = ((Float, DownloadLink?) -> Void)
 typealias SingleTaskCompleteHandler = ((DownloadLink?) -> Void)
@@ -18,6 +19,9 @@ typealias AllTasksCompleteHandler = (() -> Void)
     fileprivate var operations = [Int: DownloadOperation]()
     
     fileprivate var progress = Progress(totalUnitCount: 0)
+    
+    ///  Background handler
+    public var backgroundSessionCompletionHandler: (() -> Void)?
     
     /// Downloading progress handler
     public var progressHandler: ProgressHandler
@@ -33,7 +37,7 @@ typealias AllTasksCompleteHandler = (() -> Void)
     public var maxOperationCount = 1
     
     /// Pesistent session id
-    public var uuid = NSUUID().uuidString
+    public var sessionId = Bundle.main.bundleIdentifier ?? "multidownload_session"
     
     /// Serial NSOperationQueue for downloads
     private let queue: OperationQueue = {
@@ -44,25 +48,29 @@ typealias AllTasksCompleteHandler = (() -> Void)
     
     /// Delegate-based NSURLSession for DownloadManager
     lazy var session: URLSession = {
-        let configuration = URLSessionConfiguration.default
+        let configuration = URLSessionConfiguration.background(withIdentifier: sessionId)
+        configuration.isDiscretionary = true
+        configuration.sessionSendsLaunchEvents = true
         return URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
     }()
     
-    init(progressHandler: @escaping ProgressHandler,
-         singleCompleteHandler: @escaping SingleTaskCompleteHandler,
-         allCompleteHandler: @escaping AllTasksCompleteHandler) {
+    init(progressHandler: @escaping ProgressHandler = { _, _ in },
+         singleCompleteHandler: @escaping SingleTaskCompleteHandler = {_ in },
+         allCompleteHandler: @escaping AllTasksCompleteHandler = { },
+         backgroundCompletion: (() -> Void)? = nil) {
         self.progressHandler = progressHandler
         self.singleTaskCompleteHandler = singleCompleteHandler
         self.allTasksCompleteHandler = allCompleteHandler
+        self.backgroundSessionCompletionHandler = backgroundCompletion
         
         super.init()
     }
     
     /// Add download links
     ///
-    /// - parameter url: The file's download URL
+    /// - parameter urls: The file's download URL
     ///
-    /// - returns: nil
+    /// - returns: void
     @objc func addDownload(_ urls: [DownloadLink]) {
         
         var newOperations = [DownloadOperation]()
@@ -81,6 +89,38 @@ typealias AllTasksCompleteHandler = (() -> Void)
         queue.addOperations(newOperations, waitUntilFinished: false)
         
         OperationQueue.main.addOperation(completeOperation)
+    }
+    
+    func saveResumeData(_ resumeData: Data, for taskIdentifier: Int) {
+        let key = "resumeData_\(taskIdentifier)"
+        UserDefaults.standard.set(resumeData, forKey: key)
+    }
+
+    func loadResumeData(for taskIdentifier: Int) -> Data? {
+        let key = "resumeData_\(taskIdentifier)"
+        return UserDefaults.standard.data(forKey: key)
+    }
+
+    func clearResumeData(for taskIdentifier: Int) {
+        let key = "resumeData_\(taskIdentifier)"
+        UserDefaults.standard.removeObject(forKey: key)
+    }
+    
+    func resumeDownload(taskIdentifier: Int) {
+        if let resumeData = loadResumeData(for: taskIdentifier) {
+            let task = session.downloadTask(withResumeData: resumeData)
+            task.resume()
+            clearResumeData(for: taskIdentifier)
+        }
+    }
+    
+    func restorePendingDownloads() {
+        session.getTasksWithCompletionHandler { [weak self] (_, _, downloadTasks) in
+            guard let self = self else { return }
+            downloadTasks.forEach { task in
+                self.resumeDownload(taskIdentifier: task.taskIdentifier)
+            }
+        }
     }
 
     /// Cancel all queued operations
@@ -108,16 +148,27 @@ extension DownloadManager: URLSessionDownloadDelegate {
         if let _ = downloadTask.originalRequest!.url {
             DispatchQueue.main.async {
                 let progress = Float(totalBytesWritten)/Float(totalBytesExpectedToWrite)
-                print("###\(progress), \(totalBytesExpectedToWrite)###")
                 self.progressHandler(progress, self.operations[downloadTask.taskIdentifier]?.downloadLink)
             }
         }
-        
-        //operations[downloadTask.taskIdentifier]?.trackDownloadByOperation(session, downloadTask: downloadTask, didWriteData: bytesWritten, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+    }
+    
+    func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        if let backgroundCompletion = self.backgroundSessionCompletionHandler {
+            DispatchQueue.main.async(execute: {
+                backgroundCompletion()
+            })
+        }
     }
     
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         let key = task.taskIdentifier
+        
+        if let error = error as NSError?, error.code == NSURLErrorCancelled {
+            if let resumeData = error.userInfo[NSURLSessionDownloadTaskResumeData] as? Data {
+                saveResumeData(resumeData, for: key)
+            }
+        }
         operations[key]?.trackDownloadByOperation(session, task: task, didCompleteWithError: error)
         operations.removeValue(forKey: key)
     }

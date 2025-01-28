@@ -13,56 +13,60 @@ class SerialDownloadController: UIViewController {
     @IBOutlet weak var downloadProgressView: UIProgressView!
     @IBOutlet weak var progressTextView: UITextView!
     
-    fileprivate var downloadManager = DownloadManager()
-    
-    public var downloadLinks = [
-        "https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4",
-        "https://sample-videos.com/img/Sample-jpg-image-30mb.jpg",
-        "https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1280_10MG.mp4",
-        "https://www.learningcontainer.com/wp-content/uploads/2019/09/sample-pdf-download-10-mb.pdf",
-        "https://sample-videos.com/img/Sample-jpg-image-20mb.jpg",
-        "https://file-examples-com.github.io/uploads/2018/04/file_example_OGG_1920_13_3mg.ogg"
-    ]
+    private var downloadManager: DownloadManager?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+            
+        // Initialize DownloadManager with handlers
         
-        downloadProgressView.progress = 0.0
-        
-        DownloadManager.maxOperationCount = 1
-        downloadManager.processDelegate = self
-        
-        let completion = BlockOperation {
-            /// Do something here when all of the download is done
-            self.descriptionLabel.text = "All of the download completed!"
+        // Update the progress UI
+        let progressHandler: ProgressHandler = { progress, downloadLink in
+            let progressDescription = String(format: "%0.1f%%", progress * 100)
+            print("Progress: \(progressDescription) for file: \(downloadLink?.fileName ?? "Unknown")")
         }
-       
-        downloadLinks.forEach { link in
-            if let url = URL(string: link) {
-                let downloadOperation = downloadManager.addDownload(url)
-                completion.addDependency(downloadOperation)
+
+        // Called when a single download task is complete
+        let singleCompleteHandler: SingleTaskCompleteHandler = { downloadLink in
+            print("Download finished for: \(downloadLink?.fileName ?? "Unknown file")")
+        }
+
+        // Called when all download tasks are complete
+        let allCompleteHandler: AllTasksCompleteHandler = {
+            print("All downloads are completed!")
+        }
+
+        // Called when background downloads are complete if download from background
+        let backgroundCompletion: () -> Void = {
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                appDelegate.backgroundSessionCompletionHandler?()
             }
+            
+            print("All tasks completed in background ")
         }
-        
-        OperationQueue.main.addOperation(completion)
-    }
-}
 
-extension SerialDownloadController: DownloadProcessProtocol {
-    
-    func downloadingProgress(_ percent: Float, fileName: String) {
-        
-        let text = String(format: "Downloading: %@, %0.2f%%", fileName ,percent * 100)
-        self.descriptionLabel.text = text
-        self.downloadProgressView.progress = percent
-    }
-    
-    func downloadSucceeded(_ fileName: String) {
-        self.progressTextView.text.append("\(fileName) has been download \n")
-    }
+        // Initialize DownloadManager with external handlers
+        let downloadManager = DownloadManager(
+            progressHandler: progressHandler,
+            singleCompleteHandler: singleCompleteHandler,
+            allCompleteHandler: allCompleteHandler,
+            backgroundCompletion: backgroundCompletion
+        )
 
-    func downloadWithError(_ error: Error?, fileName: String) {
-        self.progressTextView.text.append("Download \(fileName) failed: \(String(describing: (error != nil) ? error!.localizedDescription : "Unknown error")) \n")
+        let customFilePath = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        let downloadLinks = [
+            DownloadLink(link: "https://www.dropbox.com/s/6xlpner3s6q336f/file1.mp4?dl=1"),
+            DownloadLink(link: "https://www.dropbox.com/s/73ymbx6icoiqus9/file2.mp4?dl=1", directory: customFilePath, fileName: "test.mp4"),
+            DownloadLink(link: "https://www.dropbox.com/s/4pw4jwiju0eon6r/file3.mp4?dl=1")
+        ]
+        // Add download link and start download
+        downloadManager.addDownload(downloadLinks)
+    }
+    
+    @IBAction func resumeDownload(_ sender: Any) {
+        // Resume any pending downloads using previously saved resume data.
+        // This method is triggered when the user interacts with the UI (e.g., button press).
+        downloadManager?.restorePendingDownloads()
     }
 }
 
